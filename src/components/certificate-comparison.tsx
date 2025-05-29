@@ -2,7 +2,7 @@ import React from 'react';
 import { Certificate } from '@/types/certificate';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Clock, CheckCircle, AlertCircle, Shield } from 'lucide-react';
+import { Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import { getExpiryStatusColor, isCertificateExpired, isCertificateExpiringSoon } from '@/lib/certificate-service';
 
 interface CertificateComparisonProps {

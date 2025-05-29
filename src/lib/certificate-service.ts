@@ -85,8 +85,3 @@ export function getBadgeStatusColor(notAfter: string): string {
     }
     return 'text-green-600 bg-green-100 dark:bg-green-600 dark:text-green-100';
 }
-
-
-export function renderCertificateStatus(cert: Certificate): any {
-    return null;
-}

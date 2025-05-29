@@ -14,6 +14,8 @@ import { AlertCircle, ArrowLeft, Download, CheckCircle, Clock } from 'lucide-rea
 import { getExpiryStatusColor, isCertificateExpired, isCertificateExpiringSoon, calculateDaysRemaining } from '@/lib/certificate-service';
 import Link from 'next/link';
 
+// This file is no longer used, we've moved to a query parameter based approach
+// in /certificate/page.tsx
 export default function CertificateDetailPage({ params }: { params: { domain: string } }) {
     const [certificate, setCertificate] = useState<Certificate | null>(null);
     const [loading, setLoading] = useState(true);

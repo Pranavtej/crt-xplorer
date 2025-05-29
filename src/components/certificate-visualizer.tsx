@@ -19,7 +19,7 @@ export function CertificateVisualizer({ certificate }: CertificateVisualizerProp
 
     // Calculate percentages for visualization
     const percentageUsed = Math.max(0, Math.min(100, (daysUsed / totalValidDays) * 100));
-    const percentageRemaining = 100 - percentageUsed;
+    // const percentageRemaining = 100 - percentageUsed; // Not used currently
 
     return (
         <Card>
