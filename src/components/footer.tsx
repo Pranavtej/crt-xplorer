@@ -1,4 +1,4 @@
-import { Globe, Github } from "lucide-react"
+import { Github } from "lucide-react"
 import Link from "next/link"
 
 export const Footer = () => {

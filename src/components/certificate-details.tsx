@@ -7,10 +7,10 @@ interface CertificateDetailsProps {
 }
 
 export function CertificateDetails({ certificate }: CertificateDetailsProps) {
-   
+
     const certJson = certificate.cert_json || {};
- 
-    const fingerprint = certJson.fingerprint || '';
+
+    // const fingerprint = certJson.fingerprint || ''; // Not used currently
     const fingerprint256 = certJson.fingerprint256 || '';
 
     return (

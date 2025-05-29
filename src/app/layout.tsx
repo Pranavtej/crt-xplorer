@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider";
-import { Footer } from "@/components/footer";
 import { sfPro } from "./fonts";
 
 export const metadata: Metadata = {

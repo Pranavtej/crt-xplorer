@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import * as forge from 'node-forge';
-import * as https from 'https';
 import * as tls from 'tls';
-import { Certificate } from '@/types/certificate';
+import { Certificate, CertificateDetails } from '@/types/certificate';
 
 export const runtime = 'nodejs'; // Using Node.js runtime for native module support
 
@@ -54,8 +52,8 @@ async function fetchCertificate(domain: string, options: CertOptions = {}): Prom
                         return reject(new Error('No certificate provided by server'));
                     }
 
-
-                    const parsedCert = parseCertificate(cert);
+                    // Type assertion to our interface since we know the structure
+                    const parsedCert = parseCertificate(cert as unknown as PeerCertificate);
                     socket.destroy();
                     resolve(parsedCert);
                 } catch (error) {
@@ -78,7 +76,7 @@ async function fetchCertificate(domain: string, options: CertOptions = {}): Prom
 }
 
 // Helper function to sanitize certificate object and remove circular references
-function sanitizeCertificateForJSON(obj: any, seenObjects = new WeakMap()): any {
+function sanitizeCertificateForJSON(obj: unknown, seenObjects = new WeakMap()): unknown {
     // Handle null/undefined
     if (obj === null || obj === undefined) {
         return obj;
@@ -109,18 +107,19 @@ function sanitizeCertificateForJSON(obj: any, seenObjects = new WeakMap()): any 
     }
 
     // Handle regular objects
-    const sanitized: any = {};
+    const sanitized: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(obj)) {
         // Skip the issuerCertificate property which causes circular references
         if (key === 'issuerCertificate') {
             // Instead of including the entire issuer certificate, include only essential information
             if (value && typeof value === 'object') {
+                const issuerCert = value as Record<string, unknown>;
                 sanitized.issuerSummary = {
-                    subject: (value as any)?.subject,
-                    issuer: (value as any)?.issuer,
-                    valid_from: (value as any)?.valid_from,
-                    valid_to: (value as any)?.valid_to,
-                    fingerprint: (value as any)?.fingerprint
+                    subject: issuerCert.subject,
+                    issuer: issuerCert.issuer,
+                    valid_from: issuerCert.valid_from,
+                    valid_to: issuerCert.valid_to,
+                    fingerprint: issuerCert.fingerprint
                 };
             }
             continue;
@@ -131,7 +130,26 @@ function sanitizeCertificateForJSON(obj: any, seenObjects = new WeakMap()): any 
     return sanitized;
 }
 
-function parseCertificate(cert: any): Certificate {
+// Define interface for peer certificate structure from Node.js TLS
+interface PeerCertificate {
+    subject: {
+        CN?: string;
+        [key: string]: string | undefined;
+    };
+    issuer: {
+        CN?: string;
+        O?: string;
+        OU?: string;
+        [key: string]: string | undefined;
+    };
+    subjectaltname?: string;
+    valid_from: string;
+    valid_to: string;
+    fingerprint: string;
+    [key: string]: unknown;
+}
+
+function parseCertificate(cert: PeerCertificate): Certificate {
     // Get all DNS entries from the subject alt name
     let altDomains: string[] = [];
     if (cert.subjectaltname) {
@@ -150,7 +168,7 @@ function parseCertificate(cert: any): Certificate {
     const uniqueDomains = [...new Set(domains)].filter(domain => domain && domain.trim().length > 0);
 
     // Create a sanitized copy of the certificate without circular references
-    const sanitizedCert = sanitizeCertificateForJSON(cert);
+    const sanitizedCert = sanitizeCertificateForJSON(cert) as CertificateDetails;
 
     return {
         domains: uniqueDomains,
@@ -162,7 +180,7 @@ function parseCertificate(cert: any): Certificate {
     };
 }
 
-function formatDistinguishedName(dn: any): string {
+function formatDistinguishedName(dn: { CN?: string; O?: string; OU?: string;[key: string]: string | undefined }): string {
     const parts = [];
 
     if (dn.CN) parts.push(`CN=${dn.CN}`);
