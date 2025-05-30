@@ -2,6 +2,9 @@
 
 CRT Explorer is a modern web application for exploring, analyzing, and comparing SSL/TLS certificates for websites. Built with Next.js, TypeScript, and Tailwind CSS, this tool provides detailed certificate information, security assessments, and comparison capabilities.
 
+![CERT Xplorer](https://github.com/user-attachments/assets/058e241d-8c2a-4b22-bb99-097c9b619e36)
+
+
 ## Features
 
 - **Certificate Fetching**: Enter any domain name to fetch and analyze its SSL/TLS certificate
